@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hullsoft.dao.admin.IAdminDao" >
+  <resultMap id="BaseResultMap" type="com.hullsoft.entity.admin.Admin" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="createTime" property="createTime" jdbcType="VARCHAR" />
+    <result column="lastLoginTime" property="lastLoginTime" jdbcType="VARCHAR" />
+    <result column="lastLoginIP" property="lastLoginIP" jdbcType="VARCHAR" />
+    <result column="roleID" property="roleID" jdbcType="INTEGER" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="isSA" property="isSA" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, username, password, createTime, lastLoginTime, lastLoginIP, roleID, email, tel, 
+    status, isSA
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_admin
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectLastInsertId" resultType="java.lang.Integer">
+  	select LAST_INSERT_ID()
+  </select>
+  <select id="selectByCondition" parameterType="com.hullsoft.entity.common.Condition" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"/>
+  	from t_admin 
+  	where 1 = 1 
+  	<if test="id!=null">and id = #{id,jdbcType=INTEGER}</if>
+  	<if test="username!=null">and username = #{username,jdbcType=VARCHAR}</if>
+  	<if test="password!=null">and password = #{password,jdbcType=VARCHAR}</if>
+  </select>
+  <select id="login" parameterType="com.hullsoft.entity.common.Condition" resultMap="BaseResultMap">
+  	select * from t_admin 
+  	where username = #{username,jdbcType=VARCHAR} and password = #{password,jdbcType=VARCHAR}
+  </select>
+  <select id="selectList" parameterType="com.hullsoft.entity.common.Page" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"/>
+  	from t_admin 
+  	where 1 = 1 
+  	<if test="condition.searchValue != null">
+  		and (
+  			username like '%${condition.searchValue}%' or 
+  			tel like '%${condition.searchValue}%' or 
+  			email like '%${condition.searchValue}%'
+  		)
+  	</if>
+  	order by lastLoginTime desc 
+  	limit #{startIndex},#{pageSize}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_admin
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hullsoft.entity.admin.Admin" >
+    insert into t_admin (id, username, password, 
+      createTime, lastLoginTime, lastLoginIP, 
+      roleID, email, tel, 
+      status, isSA)
+    values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=VARCHAR}, #{lastLoginTime,jdbcType=VARCHAR}, #{lastLoginIP,jdbcType=VARCHAR}, 
+      #{roleID,jdbcType=INTEGER}, #{email,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, 
+      #{status,jdbcType=INTEGER}, #{isSA,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hullsoft.entity.admin.Admin" >
+    insert into t_admin
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="username != null" >
+        username,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+      <if test="createTime != null" >
+        createTime,
+      </if>
+      <if test="lastLoginTime != null" >
+        lastLoginTime,
+      </if>
+      <if test="lastLoginIP != null" >
+        lastLoginIP,
+      </if>
+      <if test="roleID != null" >
+        roleID,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="tel != null" >
+        tel,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="isSA != null" >
+        isSA,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="lastLoginTime != null" >
+        #{lastLoginTime,jdbcType=VARCHAR},
+      </if>
+      <if test="lastLoginIP != null" >
+        #{lastLoginIP,jdbcType=VARCHAR},
+      </if>
+      <if test="roleID != null" >
+        #{roleID,jdbcType=INTEGER},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="isSA != null" >
+        #{isSA,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hullsoft.entity.admin.Admin" >
+    update t_admin
+    <set >
+      <if test="username != null" >
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        createTime = #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="lastLoginTime != null" >
+        lastLoginTime = #{lastLoginTime,jdbcType=VARCHAR},
+      </if>
+      <if test="lastLoginIP != null" >
+        lastLoginIP = #{lastLoginIP,jdbcType=VARCHAR},
+      </if>
+      <if test="roleID != null" >
+        roleID = #{roleID,jdbcType=INTEGER},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        tel = #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="isSA != null" >
+        isSA = #{isSA,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hullsoft.entity.admin.Admin" >
+    update t_admin
+    set username = #{username,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      createTime = #{createTime,jdbcType=VARCHAR},
+      lastLoginTime = #{lastLoginTime,jdbcType=VARCHAR},
+      lastLoginIP = #{lastLoginIP,jdbcType=VARCHAR},
+      roleID = #{roleID,jdbcType=INTEGER},
+      email = #{email,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      isSA = #{isSA,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

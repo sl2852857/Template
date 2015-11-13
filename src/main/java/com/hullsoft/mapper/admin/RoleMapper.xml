@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hullsoft.dao.admin.IRoleDao" >
+  <resultMap id="BaseResultMap" type="com.hullsoft.entity.admin.Role" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="createTime" property="createTime" jdbcType="VARCHAR" />
+    <result column="lastUpdateTime" property="lastUpdateTime" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap type="com.hullsoft.entity.admin.Menu" id="MenuResultMap">
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="parentID" property="parentID" jdbcType="INTEGER" />
+    <result column="orderNum" property="orderNum" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+  	<collection property="menuList" ofType="com.hullsoft.entity.admin.Menu">
+	    <id column="s_id" property="id" jdbcType="INTEGER" />
+	    <result column="s_name" property="name" jdbcType="VARCHAR" />
+	    <result column="s_url" property="url" jdbcType="VARCHAR" />
+	    <result column="s_parentID" property="parentID" jdbcType="INTEGER" />
+	    <result column="s_orderNum" property="orderNum" jdbcType="INTEGER" />
+	    <result column="s_status" property="status" jdbcType="INTEGER" />
+  	</collection>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, createTime, lastUpdateTime, status
+  </sql>
+  <sql id="Main_Son_Menu_List">
+  	m1.id, m1.name, m1.url, m1.parentID, m1.orderNum, m1.status, 
+  	m2.id as s_id, m2.name as s_name, m2.url as s_url, 
+  	m2.parentID as s_parentID, m2.orderNum as s_orderNum, m2.status as s_status 
+  </sql> 
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_role
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectLastInsertId" resultType="java.lang.Integer">
+  	select LAST_INSERT_ID()
+  </select>
+  <select id="selectList" parameterType="com.hullsoft.entity.common.Page" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"/> 
+  	from t_role 
+  	where 1 = 1 
+  	<if test="condition.searchValue!=null">
+  		and name like '%${condition.searchValue}%'
+  	</if>
+	limit #{startIndex},#{pageSize}
+  </select>
+  <select id="selectMenuList" parameterType="java.lang.Integer" resultMap="MenuResultMap">
+  	select 
+  	<include refid="Main_Son_Menu_List"/>
+  	from t_menu m1 left join t_menu m2 on m1.id=m2.parentID 
+  		left join t_role__menu rm on rm.menuID=m2.id 
+  	where 1=1 and m1.parentID=0 and rm.roleID=#{id,jdbcType=INTEGER}
+  	 order by m1.orderNum,m2.orderNum
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_role
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteAssociation" parameterType="com.hullsoft.entity.common.Condition">
+  	delete from t_role__menu 
+  	where roleID = #{roleID,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hullsoft.entity.admin.Role" >
+    insert into t_role (name, createTime, 
+      lastUpdateTime, status)
+    values (#{name,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, 
+      #{lastUpdateTime,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertAssociation" parameterType="com.hullsoft.entity.common.Condition">
+  	insert into t_role__menu (roleID, menuID) 
+  	values (#{roleID,jdbcType=INTEGER}, #{menuID,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hullsoft.entity.admin.Role" >
+    insert into t_role
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="createTime != null" >
+        createTime,
+      </if>
+      <if test="lastUpdateTime != null" >
+        lastUpdateTime,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="lastUpdateTime != null" >
+        #{lastUpdateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hullsoft.entity.admin.Role" >
+    update t_role
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        createTime = #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="lastUpdateTime != null" >
+        lastUpdateTime = #{lastUpdateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hullsoft.entity.admin.Role" >
+    update t_role
+    set name = #{name,jdbcType=VARCHAR},
+      createTime = #{createTime,jdbcType=VARCHAR},
+      lastUpdateTime = #{lastUpdateTime,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

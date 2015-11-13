@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hullsoft.dao.admin.IMenuDao" >
+  <resultMap id="BaseResultMap" type="com.hullsoft.entity.admin.Menu" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="parentID" property="parentID" jdbcType="INTEGER" />
+    <result column="orderNum" property="orderNum" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap type="com.hullsoft.entity.admin.Menu" id="MenuResultMap">
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="parentID" property="parentID" jdbcType="INTEGER" />
+    <result column="orderNum" property="orderNum" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+  	<collection property="menuList" ofType="com.hullsoft.entity.admin.Menu">
+	    <id column="s_id" property="id" jdbcType="INTEGER" />
+	    <result column="s_name" property="name" jdbcType="VARCHAR" />
+	    <result column="s_url" property="url" jdbcType="VARCHAR" />
+	    <result column="s_parentID" property="parentID" jdbcType="INTEGER" />
+	    <result column="s_orderNum" property="orderNum" jdbcType="INTEGER" />
+	    <result column="s_status" property="status" jdbcType="INTEGER" />
+  	</collection>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, url, parentID, orderNum, status
+  </sql>
+  <sql id="Main_Son_Menu_List">
+  	m1.id, m1.name, m1.url, m1.parentID, m1.orderNum, m1.status, 
+  	m2.id as s_id, m2.name as s_name, m2.url as s_url, 
+  	m2.parentID as s_parentID, m2.orderNum as s_orderNum, m2.status as s_status 
+  </sql>  
+  <select id="selectByPrimaryKey" resultMap="MenuResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Main_Son_Menu_List" />
+    from t_menu m1 left join t_menu m2 on m1.id=m2.parentID 
+    where m1.id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectLastInsertId" resultType="java.lang.Integer">
+  	select LAST_INSERT_ID()
+  </select>
+  <select id="selectList" parameterType="com.hullsoft.entity.common.Condition" resultMap="MenuResultMap">
+  	select 
+  	<include refid="Main_Son_Menu_List"/>
+  	from t_menu m1 left join t_menu m2 on m1.id=m2.parentID 
+  	where 1=1 and m1.parentID=0 
+  	<if test="searchValue!=null and searchValue!=''">
+  		and (
+  		m1.name like '%${searchValue}%' or 
+  		m1.url like '%${searchValue}%' or 
+  		m2.name like '%${searchValue}%' or 
+  		m2.url like '%${searchValue}%') 
+  	</if>
+  	 order by m1.orderNum,m2.orderNum
+  </select>
+  
+  <select id="selectByCondition" parameterType="com.hullsoft.entity.common.Condition" 
+  	resultType="com.hullsoft.entity.admin.Menu">
+  	select * from t_menu where 1=1 
+  	<if test="menuName!=null and menuName!=''">
+  		and name=#{menuName} 
+  	</if> 
+  	limit 1
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_menu
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hullsoft.entity.admin.Menu" >
+    insert into t_menu (name, url, 
+      parentID, orderNum, status)
+    values (#{name,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, 
+      #{parentID,jdbcType=INTEGER}, #{orderNum,jdbcType=INTEGER}, #{status,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hullsoft.entity.admin.Menu" >
+    insert into t_menu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="url != null" >
+        url,
+      </if>
+      <if test="parentID != null" >
+        parentID,
+      </if>
+      <if test="orderNum != null" >
+        orderNum,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="parentID != null" >
+        #{parentID,jdbcType=INTEGER},
+      </if>
+      <if test="orderNum != null" >
+        #{orderNum,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hullsoft.entity.admin.Menu" >
+    update t_menu
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="parentID != null" >
+        parentID = #{parentID,jdbcType=INTEGER},
+      </if>
+      <if test="orderNum != null" >
+        orderNum = #{orderNum,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hullsoft.entity.admin.Menu" >
+    update t_menu
+    set name = #{name,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      parentID = #{parentID,jdbcType=INTEGER},
+      orderNum = #{orderNum,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER} 
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByCondition" parameterType="com.hullsoft.entity.common.Condition" >
+    update t_menu
+    set 
+    <if test="name !=null">
+    name = #{name,jdbcType=VARCHAR},
+    </if>
+    <if test="url !=null">
+    url = #{url,jdbcType=VARCHAR},
+    </if>
+    <if test="parentID !=null">
+     parentID = #{parentID,jdbcType=INTEGER},
+    </if>
+    <if test="orderNum !=null">
+    orderNum = #{orderNum,jdbcType=INTEGER},
+    </if>
+    <if test="status !=null">
+     status = #{status,jdbcType=INTEGER}, 
+    </if>
+    id=#{id,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
