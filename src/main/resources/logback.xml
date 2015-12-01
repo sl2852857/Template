@@ -12,15 +12,51 @@ See here for more details: http://gordondickens.com/wordpress/2013/03/27/sawing-
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%-5level %d{HH:mm:ss.SSS} %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-	<!--<logger name="org.hibernate" level="debug"/> -->
-   <!-- Uncomment and add your logger here:
-    <logger name="org.springframework.samples.service.service" level="debug"/> -->
+	<!-- ch.qos.logback.core.rolling.RollingFileAppender 文件日志输出 -->  
+    <!-- 日志累计到一定体积后生成新的日志文件
+    <appender name="file"  
+        class="ch.qos.logback.core.rolling.RollingFileAppender">  
+        <Encoding>UTF-8</Encoding>  
+        <File>F:/sts-workspace/logs/Template.log</File>  
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">  
+            <FileNamePattern>F:/sts-workspace/logs/Template-%d{yyyy-MM-dd}.log  
+            </FileNamePattern>  
+            <MaxHistory>10</MaxHistory>  
+            <TimeBasedFileNamingAndTriggeringPolicy  
+                class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">  
+                <MaxFileSize>5MB</MaxFileSize>  
+            </TimeBasedFileNamingAndTriggeringPolicy>  
+        </rollingPolicy>  
+        <layout class="ch.qos.logback.classic.PatternLayout">  
+            <pattern>[%-5level] %d{HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n  
+            </pattern>  
+        </layout>  
+    </appender>  -->
+    
+    <appender name="file"
+ 	 	class="ch.qos.logback.core.rolling.RollingFileAppender">
+ 		<Prudent>true</Prudent> 
+  		<rollingPolicy
+   			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	   		<FileNamePattern>
+	    		F:/sts-workspace/logs/Template-%d{yyyy-MM-dd}.log
+	   		</FileNamePattern>
+	   		<!-- keep 60 days worth of history --> 
+	   		<MaxHistory>60</MaxHistory>
+  		</rollingPolicy>
+  		<layout class="ch.qos.logback.classic.PatternLayout">
+   			<pattern>
+			    %-5level %d{HH:mm:ss.SSS} %logger{36} - %msg%n    
+   			</pattern>
+  		</layout>
+ 	</appender>
          
     <root level="info">
+    	<appender-ref ref="file"/>
         <appender-ref ref="console"/>
     </root>
 </configuration>
