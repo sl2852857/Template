@@ -1,0 +1,13 @@
+对ajax调用返回的结果进行了统一，使用Result对象作为ajax返回的json对象，详情查看该Result对象
+注意事项：
+	1、返回Result对象时需要设置state状态，有三种：Result.SUCCESS,Result.FAILURE,Result.ERROR；
+	2、要带回信息就设置msg，对于错误直接使用setError(e)，会将错误类型设置进msg中
+	3、对于controller中返回json的统一都用try{}catch{}包裹代码，捕获错误；
+
+日志记录：
+	有良好的日志记录，对于接口调用的开始和结果有日志记录，对于捕获的错误一定要输出到日志
+
+controller、service、dao的功能规范：
+	Service中的方法尽量功能单一
+	Controller中尽量通过对Service的方法调用来完成逻辑处理，从数据库查询的数据尽量在service中进行处理，使代码整洁
+	Dao层不处理逻辑，只执行数据的持久化操作和查询操作；
