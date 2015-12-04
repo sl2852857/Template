@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ include file="/layouts/taglibs.jsp" %>
 <!DOCTYPE html>
 <html class="login-bg">
 <head>
@@ -8,20 +9,20 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	
     <!-- bootstrap -->
-    <link href="css/bootstrap/bootstrap.css" rel="stylesheet" />
-    <link href="css/bootstrap/bootstrap-responsive.css" rel="stylesheet" />
-    <link href="css/bootstrap/bootstrap-overrides.css" type="text/css" rel="stylesheet" />
+    <link href="${cssPath}/bootstrap/bootstrap.css" rel="stylesheet" />
+    <link href="${cssPath}/bootstrap/bootstrap-responsive.css" rel="stylesheet" />
+    <link href="${cssPath}/bootstrap/bootstrap-overrides.css" type="text/css" rel="stylesheet" />
 
     <!-- global styles -->
-    <link rel="stylesheet" type="text/css" href="css/layout.css" />
-    <link rel="stylesheet" type="text/css" href="css/elements.css" />
-    <link rel="stylesheet" type="text/css" href="css/icons.css" />
+    <link rel="stylesheet" type="text/css" href="${cssPath}/layout.css" />
+    <link rel="stylesheet" type="text/css" href="${cssPath}/elements.css" />
+    <link rel="stylesheet" type="text/css" href="${cssPath}/icons.css" />
 
     <!-- libraries -->
-    <link rel="stylesheet" type="text/css" href="css/lib/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="${cssPath}/lib/font-awesome.css" />
     
     <!-- this page specific styles -->
-    <link rel="stylesheet" href="css/compiled/signin.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="${cssPath}/compiled/signin.css" type="text/css" media="screen" />
 
     <!-- open sans font -->
     <link href='http://fonts.useso.com/css?family=Open+Sans:300italic,400italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css' />
@@ -37,25 +38,25 @@
     <div class="bg-switch visible-desktop">
         <div class="bgs">
             <a href="#" data-img="landscape.jpg" class="bg active">
-                <img src="img/bgs/landscape.jpg" />
+                <img src="${imgPath}/bgs/landscape.jpg" />
             </a>
             <a href="#" data-img="blueish.jpg" class="bg">
-                <img src="img/bgs/blueish.jpg" />
+                <img src="${imgPath}/bgs/blueish.jpg" />
             </a>            
             <a href="#" data-img="7.jpg" class="bg">
-                <img src="img/bgs/7.jpg" />
+                <img src="${imgPath}/bgs/7.jpg" />
             </a>
             <a href="#" data-img="8.jpg" class="bg">
-                <img src="img/bgs/8.jpg" />
+                <img src="${imgPath}/bgs/8.jpg" />
             </a>
             <a href="#" data-img="9.jpg" class="bg">
-                <img src="img/bgs/9.jpg" />
+                <img src="${imgPath}/bgs/9.jpg" />
             </a>
             <a href="#" data-img="10.jpg" class="bg">
-                <img src="img/bgs/10.jpg" />
+                <img src="${imgPath}/bgs/10.jpg" />
             </a>
             <a href="#" data-img="11.jpg" class="bg">
-                <img src="img/bgs/11.jpg" />
+                <img src="${imgPath}/bgs/11.jpg" />
             </a>
         </div>
     </div>
@@ -63,20 +64,22 @@
 
     <div class="row-fluid login-wrapper">
         <a href="index.html">
-            <img class="logo" src="img/logo-white.png" />
+            <img class="logo" src="${imgPath}/logo-white.png" />
         </a>
 
         <div class="span4 box">
             <div class="content-wrap">
                 <h6>请登录</h6>
-                <input class="span12" type="text" placeholder="请输入用户名" />
-                <input class="span12" type="password" placeholder="请输入密码" />
-                <a href="#" class="forgot">忘记密码了?</a>
+                <form>
+                <input class="span12" type="text" name="username" id="username" placeholder="请输入用户名" required="required"/>
+                <input class="span12" type="password" name="password" id="password" placeholder="请输入密码" required="required"/>
+                </form>
+                <!-- <a href="#" class="forgot">忘记密码了?</a> -->
                 <div class="remember">
                     <input id="remember-me" type="checkbox" />
                     <label for="remember-me">记住密码</label>
                 </div>
-                <a class="btn-glow primary login" href="index.html">进入系统</a>
+                <a class="btn-glow primary login" href="javascript:signIn()">进入系统</a>
             </div>
         </div>
 
@@ -87,13 +90,21 @@
     </div>
 
 	<!-- scripts -->
-    <script src="js/jquery-latest.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/theme.js"></script>
+    <script src="${jsPath}/jquery-latest.js"></script>
+    <script src="${jsPath}/jquery.cookie.js"></script>
+    <script src="${jsPath}/bootstrap.min.js"></script>
+    <script src="${jsPath}/theme.js"></script>
 
     <!-- pre load bg imgs -->
     <script type="text/javascript">
         $(function () {
+        	//cookie加载
+        	$("#username").val($.cookie('username'));
+        	var cookie_pwd = $.cookie('password');
+        	if(cookie_pwd!=null&&cookie_pwd!='undefined') {
+        		$("#remember-me").attr("checked","checked");
+        		$("#password").val(cookie_pwd);
+        	}
             // bg switcher
             var $btns = $(".bg-switch .bg");
             $btns.click(function (e) {
@@ -102,10 +113,47 @@
                 $(this).addClass("active");
                 var bg = $(this).data("img");
 
-                $("html").css("background-image", "url('img/bgs/" + bg + "')");
+                $("html").css("background-image", "url('${imgPath}/bgs/" + bg + "')");
             });
 
         });
+        
+        function signIn() {
+        	var username = $.trim($("#username").val());
+        	var password = $.trim($("#password").val());
+        	if(username==''){
+        		$("#username").focus();
+        		return false;
+        	}
+        	$.cookie('username',username,{expires: 365})
+        	if(password==''){
+        		$("#password").focus();
+        		return false;
+        	}
+        	
+        	if($("#remember-me").is(":checked")){
+        		$.cookie('password',passowrd,{expires: 365});
+        	}else{
+        		$.cookie('password',null,{expires: 365});
+        	}
+        	
+        	$.ajax({
+        		type: 'POST',
+        		url: '${base}/admin/login.do',
+        		data: $("form").serialize(),
+        		dataType: 'json',
+        		success: function(res){
+        			if(res.state=='success'){
+        				alert('欢迎进入');
+        				location.href = '${base}/admin/index.do';
+        			}else if(res.state=='failure'){
+        				alert(res.msg);
+        			}else{
+        				alert('系统异常');
+        			}
+        		}
+        	})
+        }
     </script>
 
 </body>

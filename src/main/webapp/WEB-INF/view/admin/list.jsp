@@ -3,7 +3,6 @@
 <%@ include file="/layouts/taglibs.jsp"%>
 <!DOCTYPE html>
 <html>
-<body>
   <script type="text/javascript">
   </script>
   <div class="table-products section">
@@ -95,5 +94,4 @@
 	  </ul>
 	</div>
   </div>
-</body>
 </html>

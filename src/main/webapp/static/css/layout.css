@@ -14,7 +14,7 @@ h1,h2,h3,h4,h5 {
 }
 h1 small,h2 small,h3 small,h4 small,h5 small {
 	margin-left: 15px;
-	font-style: normal;
+	font-style: italic;
 }
 
 input.search{
@@ -254,7 +254,7 @@ input.search{
 	width: 180px;
 	float: left;
 	margin: 0em;
-	/* padding-top: 5.8em;	 */
+	padding-top: 5.8em;	
 }
 #dashboard-menu {
 	list-style: none;

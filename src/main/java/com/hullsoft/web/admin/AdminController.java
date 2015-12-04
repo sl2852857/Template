@@ -18,9 +18,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.hullsoft.entity.admin.Admin;
+import com.hullsoft.entity.admin.Role;
 import com.hullsoft.entity.common.Page;
 import com.hullsoft.entity.common.Result;
 import com.hullsoft.service.admin.IAdminService;
+import com.hullsoft.service.admin.IMenuService;
+import com.hullsoft.service.admin.IRoleService;
 
 /**
  * @author Administrator
@@ -34,6 +37,12 @@ public class AdminController {
 	
 	@Resource
 	private IAdminService adminService;
+	
+	@Resource
+	private IMenuService menuService;
+	
+	@Resource
+	private IRoleService roleService;
 	
 	/**
 	 * 异步请求登录
@@ -207,13 +216,12 @@ public class AdminController {
 	 * @return
 	 */
 	@RequestMapping("/index.do")
-	public String index() {
+	public String index(Model model, HttpServletRequest request) {
+		Admin admin = (Admin)request.getSession().getAttribute("loginAdmin");
+		Role role = roleService.selectById(admin.getRoleID());
+		model.addAttribute("role", role);
+		//获取用户角色和权限
 		return "index";
 	}
 	
-	@RequestMapping("/main.do")
-	public String main() {
-		return "main";
-		
-	}
 }

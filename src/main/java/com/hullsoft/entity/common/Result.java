@@ -41,6 +41,6 @@ public class Result extends HashMap<String, Object> {
 	 */
 	public void setError(Exception e){
 		this.put("state", ERROR);
-		this.put("MSG", e.getClass().getName());
+		this.put("msg", e.getClass().getName());
 	}
 }
