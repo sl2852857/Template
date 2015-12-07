@@ -57,4 +57,17 @@ public class Menu {
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
+	
+	
+	public Menu() {
+		super();
+	}
+	public Menu(Integer id, String name, String url, Integer parentID) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.url = url;
+		this.parentID = parentID;
+	}
+	
 }

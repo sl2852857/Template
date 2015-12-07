@@ -101,9 +101,12 @@
         	//cookie加载
         	$("#username").val($.cookie('username'));
         	var cookie_pwd = $.cookie('password');
-        	if(cookie_pwd!=null&&cookie_pwd!='undefined') {
-        		$("#remember-me").attr("checked","checked");
+        	if(cookie_pwd!='null'&&cookie_pwd!='undefined') {
+        		$("#remember-me").attr("checked",true);
         		$("#password").val(cookie_pwd);
+        	}else {
+        		$("#password").val("");
+        		$("#remember-me").attr("checked",false);
         	}
             // bg switcher
             var $btns = $(".bg-switch .bg");
@@ -118,21 +121,22 @@
 
         });
         
+        //登录验证
         function signIn() {
         	var username = $.trim($("#username").val());
         	var password = $.trim($("#password").val());
         	if(username==''){
         		$("#username").focus();
-        		return false;
+        		return;
         	}
         	$.cookie('username',username,{expires: 365})
         	if(password==''){
         		$("#password").focus();
-        		return false;
+        		return;
         	}
         	
         	if($("#remember-me").is(":checked")){
-        		$.cookie('password',passowrd,{expires: 365});
+        		$.cookie('password',password,{expires: 365});
         	}else{
         		$.cookie('password',null,{expires: 365});
         	}
@@ -149,7 +153,7 @@
         			}else if(res.state=='failure'){
         				alert(res.msg);
         			}else{
-        				alert('系统异常');
+        				alert('系统异常:'+res.msg);
         			}
         		}
         	})

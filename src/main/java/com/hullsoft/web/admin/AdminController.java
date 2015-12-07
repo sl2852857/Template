@@ -69,14 +69,19 @@ public class AdminController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/logout.do")
+	@RequestMapping(value = "/logout.do", produces = "application/json")
 	public @ResponseBody String logout(HttpServletRequest request){
 		Result result = new Result();
 		try {
 			HttpSession session = request.getSession();
-			Admin admin = (Admin)session.getAttribute("loginMan");
-			log.info("用户["+(admin==null?"session已无loginMan的值":admin.getUsername())+"]登出，清除session中的缓存");
-			session.removeAttribute("loginMan");
+			Admin admin = (Admin)session.getAttribute("loginAdmin");
+			if(admin == null) {
+				log.info("HttpSession中已无LoginAdmin的值");
+				result.setMsg("session用户缓存已被清除");
+			}else{
+				log.info("用户["+admin.getUsername()+"]登出，清除session中的缓存");
+				session.removeAttribute("loginAdmin");
+			}
 			result.setState(Result.SUCCESS);
 		} catch (Exception e) {
 			log.error("系统异常", e);
@@ -218,7 +223,14 @@ public class AdminController {
 	@RequestMapping("/index.do")
 	public String index(Model model, HttpServletRequest request) {
 		Admin admin = (Admin)request.getSession().getAttribute("loginAdmin");
-		Role role = roleService.selectById(admin.getRoleID());
+		Role role = null;
+		if(admin.getRoleID()==null || admin.getRoleID()==0) {
+			//没有roleID则登录用户是系统超级管理员
+			log.info("***【系统超级管理员】登入系统***");
+			role = Role.getSaRole();
+		}else {
+			role = roleService.selectByIdAndMenuIsEnable(admin.getRoleID());
+		}
 		model.addAttribute("role", role);
 		//获取用户角色和权限
 		return "index";

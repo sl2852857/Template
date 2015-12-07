@@ -109,4 +109,15 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements IRoleServi
 		log.info("---查询角色信息 End------");
 		return role;
 	}
+
+	public Role selectByIdAndMenuIsEnable(Integer id) {
+		long startTime = System.currentTimeMillis();
+		log.info("---查询角色信息(菜单状态为可用) Start------");
+		Role role = super.selectById(id);
+		List<Menu> menuList = roleDao.selectMenuListAndMenuIsEnable(id);
+		role.setMenuList(menuList);
+		log.info("耗时："+(System.currentTimeMillis() - startTime) + "ms");
+		log.info("---查询角色信息 End------");
+		return role;
+	}
 }

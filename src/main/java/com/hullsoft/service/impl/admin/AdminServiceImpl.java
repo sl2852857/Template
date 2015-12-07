@@ -15,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.hullsoft.dao.admin.IAdminDao;
+import com.hullsoft.dao.admin.IRoleDao;
 import com.hullsoft.entity.admin.Admin;
+import com.hullsoft.entity.admin.Role;
 import com.hullsoft.entity.common.Condition;
 import com.hullsoft.entity.common.Result;
 import com.hullsoft.service.admin.IAdminService;
@@ -32,6 +34,9 @@ public class AdminServiceImpl extends BaseServiceImpl<Admin> implements IAdminSe
 	private static final Logger log = LoggerFactory.getLogger(AdminServiceImpl.class);
 	@Resource
 	private IAdminDao adminDao;
+	
+	@Resource
+	private IRoleDao roleDao;
 
 	public void login(String username, String password, HttpSession session, Result result) {
 		log.info("------登录验证 Start------");
@@ -48,16 +53,34 @@ public class AdminServiceImpl extends BaseServiceImpl<Admin> implements IAdminSe
 		}else {
 			if(admin.getStatus()==0) {
 				//status=0表示账号状态为启用
-				result.setState(Result.SUCCESS);
-				session.setAttribute("loginAdmin", admin);
+				if(admin.getRoleID() != null) {
+					//不是系统超级管理员，判断该账号的角色是否正常启用
+					Role role = roleDao.selectByPrimaryKey(admin.getRoleID());
+					if(role.getStatus() == 0) {
+						//角色正常使用
+						result.setState(Result.SUCCESS);
+						session.setAttribute("loginAdmin", admin);
+						log.info("用户 ["+admin.getUsername()+"]登陆成功，进入系统");
+					}else if(role.getStatus() == 1) {
+						//角色已被停用
+						result.setState(Result.FAILURE);
+						log.info("用户 ["+admin.getUsername()+"]所属角色已被管理员停用");
+						result.setMsg("您的用户角色已被管理员停用，请联系管理员");
+					}
+				}else {
+					result.setState(Result.SUCCESS);
+					session.setAttribute("loginAdmin", admin);
+					log.info("用户 ["+admin.getUsername()+"]登陆成功，进入系统");
+				}
 			}else if(admin.getStatus()==1) {
 				//status=1表示账号转改为封停
 				result.setState(Result.FAILURE);
-				result.setMsg("该账号已被管理员封停");
+				result.setMsg("您的账号已被管理员停用");
+				log.info("用户 ["+admin.getUsername()+"]账号已被管理员停用");
 			}else{
 				log.info("用户["+JSON.toJSONString(admin)+"]状态异常！");
 				result.setState(Result.FAILURE);
-				result.setMsg("该账号状态异常，请联系管理员");
+				result.setMsg("该账号存在状态异常[status="+admin.getStatus()+"]，请联系管理员");
 			}
 		}
 		log.info("耗时："+(System.currentTimeMillis() - startTime) + "ms");

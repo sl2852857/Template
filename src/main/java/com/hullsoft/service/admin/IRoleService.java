@@ -18,6 +18,18 @@ public interface IRoleService extends IBaseService<Role> {
 	 */
 	void insert(Role role, int[] menuIds) throws Exception;
 
+	/**
+	 * 修改角色与菜单关联关系
+	 * @param role
+	 * @param menuIds
+	 * @throws Exception
+	 */
 	void updateById(Role role, int[] menuIds) throws Exception;
 	
+	/**
+	 * 查询角色对应的菜单集（菜单状态为可用状态）
+	 * @param id
+	 * @return
+	 */
+	Role selectByIdAndMenuIsEnable(Integer id);
 }

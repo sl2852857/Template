@@ -89,8 +89,9 @@
       		<i class="icon-chevron-down"></i>
     	  </a>
     	  <ul class="submenu">
-    	  <c:forEach items="${menu.menuList }" var="sonMenu"></c:forEach>
-      		<li><a href="javascript:load(${sonMenu.url})">${sonMenu.name }</a></li>
+    	  <c:forEach items="${menu.menuList }" var="sonMenu">
+      		<li><a href="javascript:loadUrl('${sonMenu.url}')">${sonMenu.name }</a></li>
+      	  </c:forEach>
     	  </ul>
   		</li>
   		</c:forEach>       
@@ -100,7 +101,7 @@
 
 	<!-- main container -->
     <div class="content" id="content">
-		欢迎你
+		你好，${role.name} ${loginAdmin.username}
     </div>
 
 	<!-- scripts -->
@@ -109,8 +110,26 @@
     <script src="${jsPath}/jquery-ui-1.10.2.custom.min.js"></script>
     <script src="${jsPath}/theme.js"></script>
 	<script type="text/javascript">
-		function load(url) {
+		function loadUrl(url) {
 			$("#content").load('${base}/'+url);
+		}
+		
+		function logout() {
+			if(confirm('确认退出？')){
+				$.ajax({
+					url: '${base}/admin/logout.do',
+					type: 'GET',
+					dataType: 'json',
+					success: function(res) {
+						if(res.state == 'success') {
+							alert('退出成功');
+						}else{
+							alert('异常退出，错误信息：'+res.msg);
+						}
+						location.href = '${base}/login.jsp';
+					}
+				})
+			}
 		}
 	</script>
 </body>

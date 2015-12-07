@@ -1,5 +1,6 @@
 package com.hullsoft.entity.admin;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,4 +53,47 @@ public class Role {
 	public void setLastUpdateTime(String lastUpdateTime) {
 		this.lastUpdateTime = lastUpdateTime;
 	}
+	
+	/**
+	 * 初始超级管理员
+	 */
+	public static Role getSaRole() {
+		Role role = new Role();
+		role.setName("系统管理员");
+		role.setMenuList(initMenu());
+		return role;
+	}
+	
+	/**
+	 * 初始化超级管理员菜单
+	 * @return
+	 */
+	private static List<Menu> initMenu() {
+		List<Menu> list = new ArrayList<Menu>();
+		
+		Menu menuManage = new Menu(1, "系统菜单", "", 0);
+		List<Menu> menuManageSonList = new ArrayList<Menu>();
+		menuManageSonList.add(new Menu(4, "系统菜单管理", "menu/list.do", 1));
+		menuManageSonList.add(new Menu(5, "系统菜单添加", "menu/toAdd.do", 1));
+		menuManage.setMenuList(menuManageSonList);
+		
+		Menu roleManage = new Menu(2, "系统角色", "", 0);
+		List<Menu> roleManageSonList = new ArrayList<Menu>();
+		roleManageSonList.add(new Menu(6, "系统角色管理", "role/list.do", 2));
+		roleManageSonList.add(new Menu(6, "系统角色添加", "role/toAdd.do", 2));
+		roleManage.setMenuList(roleManageSonList);
+		
+		Menu adminManage = new Menu(3, "系统用户", "", 0);
+		List<Menu> adminManageSonList = new ArrayList<Menu>();
+		adminManageSonList.add(new Menu(6, "系统角色管理", "admin/list.do", 2));
+		adminManageSonList.add(new Menu(6, "系统角色添加", "admin/toAdd.do", 2));
+		adminManage.setMenuList(adminManageSonList);
+		
+		list.add(menuManage);
+		list.add(roleManage);
+		list.add(adminManage);
+		return list;
+	}
+	
+	
 }

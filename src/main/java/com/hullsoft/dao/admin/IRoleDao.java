@@ -33,4 +33,11 @@ public interface IRoleDao extends IBaseDao<Role> {
 	 */
 	List<Menu> selectMenuList(Integer id);
 
+	/**
+	 * 查询与角色关联的菜单(菜单状态为可用)
+	 * @param id
+	 * @return
+	 */
+	List<Menu> selectMenuListAndMenuIsEnable(Integer id);
+
 }

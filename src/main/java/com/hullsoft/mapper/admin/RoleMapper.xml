@@ -59,6 +59,14 @@
   	where 1=1 and m1.parentID=0 and rm.roleID=#{id,jdbcType=INTEGER}
   	 order by m1.orderNum,m2.orderNum
   </select>
+  <select id="selectMenuListAndMenuIsEnable" parameterType="java.lang.Integer" resultMap="MenuResultMap">
+  	select 
+  	<include refid="Main_Son_Menu_List"/>
+  	from t_menu m1 left join t_menu m2 on m1.id=m2.parentID 
+  		left join t_role__menu rm on rm.menuID=m2.id 
+  	where 1=1 and m1.parentID=0 and rm.roleID=#{roleID,jdbcType=INTEGER} and m1.status=0 and m2.status=0 
+  	 order by m1.orderNum,m2.orderNum
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from t_role
     where id = #{id,jdbcType=INTEGER}

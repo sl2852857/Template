@@ -1,5 +1,8 @@
 package com.hullsoft.entity.admin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Description:	系统使用者
  * Create DateTime: 2015年11月2日 下午1:51:58
@@ -109,5 +112,4 @@ public class Admin {
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
-    
 }
