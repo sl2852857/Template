@@ -119,6 +119,9 @@
 				if(msg.state=='success') {
 					alert("添加成功");
 					loadData();
+					$("#addMenu").modal("toggle");
+					//重置模态框表单
+					$("#add_form")[0].reset();
 				}else{
 					alert(msg.msg);
 				}

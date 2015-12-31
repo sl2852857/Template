@@ -157,7 +157,7 @@ public class MenuController {
 		log.info("修改菜单信息");
 		Result result = new Result();
 		try {
-			menuService.updateById(menu);
+			menuService.updateByIdSelective(menu);
 			result.setState(Result.SUCCESS);
 		} catch (DuplicateKeyException e) {
 			log.info("唯一性约束条件冲突，修改失败");

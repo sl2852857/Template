@@ -58,7 +58,7 @@
 	        <td>
 	          <ul class="actions">
 	          	<li><i class="table-edit"></i></li>
-	           	<li><i class="table-settings" onclick="settingsFunc('${menu.id}')"></i></li>
+	           	<li><i class="table-settings" onclick="settingsFunc('${menu.id}','0','${menu.status}')"></i></li>
 	          	<li class="last"><i class="table-delete" onclick="deleteFunc('${menu.id}','0')"></i></li>
 	          </ul>
 	        </td>
@@ -91,7 +91,7 @@
 		        <td>
 		          <ul class="actions">
 		          	<li><i class="table-edit"></i></li>
-		           	<li><i class="table-settings"></i></li>
+		           	<li><i class="table-settings" onclick="settingsFunc('${sonMenu.id}','1','${sonMenu.status}')"></i></li>
 		          	<li class="last"><i class="table-delete" onclick="deleteFunc('${sonMenu.id}','1')"></i></li>
 		          </ul>
 		        </td>
@@ -111,9 +111,39 @@
   			$.get("${base}/admin/menu/delete.do?ids="+id, function(msg){
   				if(msg.state!='success') {
   					alert(msg.msg);
+  				}else{
+  					loadData();
   				}
   			});
-  			loadData();
+  		}
+  	}
+  	
+  	function settingsFunc(id, parentID, status){
+  		var q = '';
+  		if(parentID=='0'&&status=='0') {
+  			q = "禁用主菜单等同禁止其所有子菜单，";
+  		};
+  		if(status=='0') {
+  			status = '1';
+  			q += "确定要禁用吗";
+  		}else {
+  			status = '0';
+  			q += "确定要启用吗";
+  		}
+  		
+  		if(confirm(q)) {
+  			$.ajax({
+  				url: '${base}/admin/menu/update.do?id='+id+'&status='+status,
+  				type: 'GET',
+  				dataType: 'json',
+  				success: function(msg) {
+  					if(msg.state!='success') {
+  						alert(msg.msg);
+  					}else {
+  						loadData();
+  					}
+  				}
+  			})
   		}
   	}
   </script>

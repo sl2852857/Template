@@ -77,6 +77,21 @@ public abstract class BaseServiceImpl<T> implements IBaseService<T> {
 			log.info("------修改对象 End------");
 		}
 	}
+	
+	@Transactional
+	public void updateByIdSelective(T t) throws Exception{
+		log.info("------修改对象（选择性） Start------");
+		long startTime = System.currentTimeMillis();
+		try {
+			log.info("修改对象："+JSON.toJSONString(t));
+			this.baseDao.updateByPrimaryKeySelective(t);
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			log.info("耗时："+(System.currentTimeMillis() - startTime) + "ms");
+			log.info("------修改对象（选择性） End------");
+		}
+	}
 
 	public T selectById(Integer id) {
 		log.info("------查询对象 Start------");

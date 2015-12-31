@@ -39,6 +39,13 @@ public interface IBaseService<T> {
 	void updateById(T t) throws Exception;
 	
 	/**
+	 * 根据 ID 修改对象(选择性的)
+	 * @param t
+	 * @throws Exception 
+	 */
+	void updateByIdSelective(T t) throws Exception;
+	
+	/**
 	 * 根据 condition 条件修改对象
 	 * 条件以Key-Value形式传入
 	 * @param map
