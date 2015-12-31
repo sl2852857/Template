@@ -25,16 +25,22 @@
     <!-- this page specific styles -->
     <link rel="stylesheet" href="${cssPath}/compiled/index.css" type="text/css" media="screen" />    
 
-    <!-- open sans font -->
+    <!-- open sans font 
     <link href='http://fonts.useso.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css' />
-
-    <!-- lato font -->
+	-->
+    <!-- lato font 
     <link href='http://fonts.useso.com/css?family=Lato:300,400,700,900,300italic,400italic,700italic,900italic' rel='stylesheet' type='text/css' />
-
+	-->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	
+	<style type="text/css">
+		#content {
+			padding: 5px;
+		}
+	</style>
 </head>
 <body>
 
@@ -46,11 +52,11 @@
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		  </button>
-		  <a class="brand" href="index.html"><img src="${imgPath }/logo.png" /></a>
+		  <a class="brand" href="${base }/admin/index.do"><img src="${imgPath }/logo.png" /></a>
 		  <ul class="nav pull-right">                
 			<li class="dropdown">
 		  	  <a href="#" class="dropdown-toggle hidden-phone" data-toggle="dropdown">
-		                        欢迎你&nbsp;${role.name }&nbsp;${loginAdmin.username}
+		      	${role.name }&nbsp;${loginAdmin.username}
 		  		<b class="caret"></b>
 		      </a>
 		      <ul class="dropdown-menu">
@@ -101,7 +107,7 @@
 
 	<!-- main container -->
     <div class="content" id="content">
-		你好，${role.name} ${loginAdmin.username}
+		<h4>您好，${role.name}${loginAdmin.username} ，您最近登录IP为：<font color="red">${loginAdmin.lastLoginIP }</font>，最近登录时间为：<font color="red">${loginAdmin.lastLoginTime }</font></h4>
     </div>
 
 	<!-- scripts -->
@@ -109,9 +115,14 @@
     <script src="${jsPath}/bootstrap.min.js"></script>
     <script src="${jsPath}/jquery-ui-1.10.2.custom.min.js"></script>
     <script src="${jsPath}/theme.js"></script>
+    <script src="${jsPath}/jquery.cookie.js"></script>
 	<script type="text/javascript">
 		function loadUrl(url) {
-			$("#content").load('${base}/'+url);
+			$.get(
+				'${base}/'+url,function(html){
+					$("#content").html(html);
+				}
+			)
 		}
 		
 		function logout() {

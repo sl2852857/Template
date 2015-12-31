@@ -254,7 +254,7 @@ input.search{
 	width: 180px;
 	float: left;
 	margin: 0em;
-	padding-top: 5.8em;	
+	/* padding-top: 5.8em;	 */
 }
 #dashboard-menu {
 	list-style: none;

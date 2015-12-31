@@ -3,6 +3,7 @@
  */
 package com.hullsoft.service.admin;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.hullsoft.entity.admin.Admin;
@@ -24,7 +25,7 @@ public interface IAdminService extends IBaseService<Admin>{
 	 * @param result 设置结果
 	 * @return
 	 */
-	void login(String username, String password, HttpSession session, Result result);
+	void login(String username, String password, HttpServletRequest request, Result result);
 
 	/**
 	 * 修改密码

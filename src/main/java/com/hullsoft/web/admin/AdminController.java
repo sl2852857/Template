@@ -55,8 +55,7 @@ public class AdminController {
 	public @ResponseBody String login(HttpServletRequest request, String username, String password) {
 		Result result = new Result(); //返回结果
 		try {
-			HttpSession session = request.getSession();
-			adminService.login(username, password, session, result);
+			adminService.login(username, password, request, result);
 		} catch (Exception e) {
 			log.error("系统异常", e);
 			result.setError(e);
@@ -213,7 +212,7 @@ public class AdminController {
 			log.error("系统异常", e);
 			result.setError(e);
 		}
-		return "admin/list";
+		return "admin/admin/list";
 	}
 	
 	/**

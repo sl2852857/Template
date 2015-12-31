@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html class="login-bg">
 <head>
-	<title> Admin 后台管理系统 - 登录Sign in</title>
+	<title>欢迎登陆 Admin 后台管理系统</title>
     
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	
@@ -24,9 +24,9 @@
     <!-- this page specific styles -->
     <link rel="stylesheet" href="${cssPath}/compiled/signin.css" type="text/css" media="screen" />
 
-    <!-- open sans font -->
+    <!-- open sans font 
     <link href='http://fonts.useso.com/css?family=Open+Sans:300italic,400italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css' />
-
+	-->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -79,7 +79,7 @@
                     <input id="remember-me" type="checkbox" />
                     <label for="remember-me">记住密码</label>
                 </div>
-                <a class="btn-glow primary login" href="javascript:signIn()">进入系统</a>
+                <a class="btn-glow primary login" id="signBtn" href="javascript:signIn()">进入系统</a>
             </div>
         </div>
 
@@ -140,6 +140,10 @@
         	}else{
         		$.cookie('password',null,{expires: 365});
         	}
+        	//限制按钮点击
+        	$("#signBtn").removeAttr("href");
+        	$("#signBtn").text("正在进入中...");
+        	
         	
         	$.ajax({
         		type: 'POST',
@@ -148,15 +152,20 @@
         		dataType: 'json',
         		success: function(res){
         			if(res.state=='success'){
-        				alert('欢迎进入');
+        				//alert('欢迎进入');
         				location.href = '${base}/admin/index.do';
         			}else if(res.state=='failure'){
         				alert(res.msg);
+        				$("#signBtn").attr("href","javascript:signIn()");
+        	        	$("#signBtn").text("进入系统");
         			}else{
         				alert('系统异常:'+res.msg);
+        				$("#signBtn").attr("href","javascript:signIn()");
+        	        	$("#signBtn").text("进入系统");
         			}
         		}
         	})
+        	
         }
     </script>
 

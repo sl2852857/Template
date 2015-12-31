@@ -1,5 +1,6 @@
 package com.hullsoft.web.admin;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -9,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -38,23 +40,46 @@ public class MenuController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/list.do", produces = "application/json;charset=UTF-8")
-	public @ResponseBody String list(HttpServletRequest request) {
-		log.info("查询菜单列表");
-		Result result = new Result();
+	@RequestMapping(value = "/list.do")
+	public String list(Model model, HttpServletRequest request) {
+		log.info("跳转菜单列表页面");
+		List<Menu> menuList = new ArrayList<Menu>();
 		try {
 			String searchValue = request.getParameter("searchValue");
 			Condition c = new Condition();
 			searchValue = searchValue==null?"":searchValue;
 			c.put(Condition.SEARCH_VALUE, searchValue);
-			List<Menu> menuList = menuService.selectList(c);
-			result.setState(Result.SUCCESS);
-			result.put("menuList", menuList);
+			menuList = menuService.selectList(c);
 		} catch (Exception e) {
 			log.error("异常错误", e);
-			result.setError(e);
+		} finally {
+			model.addAttribute("menuList", menuList);
 		}
-		return result.toJSONString();
+		return "admin/menu/list";
+	}
+	
+	/**
+	 * 查询菜单数据
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/data.do")
+	public String data(Model model, HttpServletRequest request){
+		log.info("查询菜单数据开始");
+		List<Menu> menuList = new ArrayList<Menu>();
+		try {
+			String searchValue = request.getParameter("searchValue");
+			Condition c = new Condition();
+			searchValue = searchValue==null?"":searchValue;
+			c.put(Condition.SEARCH_VALUE, searchValue);
+			menuList = menuService.selectList(c);
+		} catch (Exception e) {
+			log.error("异常错误", e);
+		} finally {
+			log.info("查询菜单数据结束");
+			model.addAttribute("menuList", menuList);
+		}
+		return "admin/menu/data";
 	}
 	
 	/**

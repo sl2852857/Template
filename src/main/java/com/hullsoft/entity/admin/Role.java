@@ -73,20 +73,20 @@ public class Role {
 		
 		Menu menuManage = new Menu(1, "系统菜单", "", 0);
 		List<Menu> menuManageSonList = new ArrayList<Menu>();
-		menuManageSonList.add(new Menu(4, "系统菜单管理", "menu/list.do", 1));
-		menuManageSonList.add(new Menu(5, "系统菜单添加", "menu/toAdd.do", 1));
+		menuManageSonList.add(new Menu(4, "系统菜单管理", "admin/menu/list.do", 1));
+		menuManageSonList.add(new Menu(5, "系统菜单添加", "admin/menu/toAdd.do", 1));
 		menuManage.setMenuList(menuManageSonList);
 		
 		Menu roleManage = new Menu(2, "系统角色", "", 0);
 		List<Menu> roleManageSonList = new ArrayList<Menu>();
-		roleManageSonList.add(new Menu(6, "系统角色管理", "role/list.do", 2));
-		roleManageSonList.add(new Menu(6, "系统角色添加", "role/toAdd.do", 2));
+		roleManageSonList.add(new Menu(6, "系统角色管理", "admin/role/list.do", 2));
+		roleManageSonList.add(new Menu(6, "系统角色添加", "admin/role/toAdd.do", 2));
 		roleManage.setMenuList(roleManageSonList);
 		
 		Menu adminManage = new Menu(3, "系统用户", "", 0);
 		List<Menu> adminManageSonList = new ArrayList<Menu>();
-		adminManageSonList.add(new Menu(6, "系统角色管理", "admin/list.do", 2));
-		adminManageSonList.add(new Menu(6, "系统角色添加", "admin/toAdd.do", 2));
+		adminManageSonList.add(new Menu(6, "系统用户管理", "admin/list.do", 2));
+		adminManageSonList.add(new Menu(6, "系统用户添加", "admin/toAdd.do", 2));
 		adminManage.setMenuList(adminManageSonList);
 		
 		list.add(menuManage);

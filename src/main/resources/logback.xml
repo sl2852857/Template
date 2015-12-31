@@ -12,7 +12,8 @@ See here for more details: http://gordondickens.com/wordpress/2013/03/27/sawing-
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%-5level %d{HH:mm:ss.SSS} %logger{36} - %msg%n</pattern>
+            <pattern>[%level] %d{HH:mm:ss} %caller{1} - %msg%n</pattern>
+<!--             <pattern>%level %d{HH:mm:ss} %logger{36} - %msg%n</pattern> -->
         </encoder>
     </appender>
 
@@ -50,7 +51,7 @@ See here for more details: http://gordondickens.com/wordpress/2013/03/27/sawing-
   		</rollingPolicy>
   		<layout class="ch.qos.logback.classic.PatternLayout">
    			<pattern>
-			    %-5level %d{HH:mm:ss.SSS} %logger{36} - %msg%n    
+			    [%level] %d{HH:mm:ss} %logger{36}:%line - %msg%n    
    			</pattern>
   		</layout>
  	</appender>

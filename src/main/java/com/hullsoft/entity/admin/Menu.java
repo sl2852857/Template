@@ -14,7 +14,7 @@ public class Menu {
 	private Integer parentID = 0;	//上级菜单id
 	private Integer orderNum;		//菜单排序序号
 	private List<Menu> menuList;	//下级菜单列表
-	private Integer status= 1;		//状态：0-启用；1-未启用(默认)
+	private Integer status= 1;		//状态：0-启用；1-未启用
 	public Integer getId() {
 		return id;
 	}

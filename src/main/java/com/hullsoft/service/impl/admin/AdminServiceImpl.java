@@ -6,6 +6,7 @@ package com.hullsoft.service.impl.admin;
 
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ import com.hullsoft.entity.common.Condition;
 import com.hullsoft.entity.common.Result;
 import com.hullsoft.service.admin.IAdminService;
 import com.hullsoft.service.impl.BaseServiceImpl;
+import com.hullsoft.utils.DateUtils;
 import com.hullsoft.utils.MD5Utils;
 
 /**
@@ -38,9 +40,10 @@ public class AdminServiceImpl extends BaseServiceImpl<Admin> implements IAdminSe
 	@Resource
 	private IRoleDao roleDao;
 
-	public void login(String username, String password, HttpSession session, Result result) {
+	public void login(String username, String password, HttpServletRequest request, Result result) {
 		log.info("------登录验证 Start------");
 		long startTime = System.currentTimeMillis();
+		HttpSession session = request.getSession();
 		Condition condition = new Condition();
 		condition.put("username", username);
 		condition.put("password", MD5Utils.MD5(password));
@@ -58,19 +61,43 @@ public class AdminServiceImpl extends BaseServiceImpl<Admin> implements IAdminSe
 					Role role = roleDao.selectByPrimaryKey(admin.getRoleID());
 					if(role.getStatus() == 0) {
 						//角色正常使用
+						String lastLoginIP = request.getRemoteAddr();
+						if("0:0:0:0:0:0:0:1".equals(lastLoginIP)) {
+							lastLoginIP = "127.0.0.1";
+						}
+						String lastLoginTime = DateUtils.now("yyyy-MM-dd HH:mm:ss");
+						log.info("用户 ["+admin.getUsername()+"]登陆成功，进入系统，IP为"+lastLoginIP);
+						//更新用户登录时间与登录IP
+						Admin temp = new Admin();
+						temp.setId(admin.getId());
+						temp.setLastLoginIP(lastLoginIP);
+						temp.setLastLoginTime(lastLoginTime);
+						adminDao.updateByPrimaryKeySelective(temp);
+						//设置success信息，将用户信息存入session中
 						result.setState(Result.SUCCESS);
 						session.setAttribute("loginAdmin", admin);
-						log.info("用户 ["+admin.getUsername()+"]登陆成功，进入系统");
 					}else if(role.getStatus() == 1) {
 						//角色已被停用
-						result.setState(Result.FAILURE);
 						log.info("用户 ["+admin.getUsername()+"]所属角色已被管理员停用");
+						result.setState(Result.FAILURE);
 						result.setMsg("您的用户角色已被管理员停用，请联系管理员");
 					}
 				}else {
+					String lastLoginIP = request.getRemoteAddr();
+					if("0:0:0:0:0:0:0:1".equals(lastLoginIP)) {
+						lastLoginIP = "127.0.0.1";
+					}
+					String lastLoginTime = DateUtils.now("yyyy-MM-dd HH:mm:ss");
+					log.info("用户 ["+admin.getUsername()+"]登陆成功，进入系统，IP为"+lastLoginIP);
+					//更新用户登录时间与登录IP
+					Admin temp = new Admin();
+					temp.setId(admin.getId());
+					temp.setLastLoginIP(lastLoginIP);
+					temp.setLastLoginTime(lastLoginTime);
+					adminDao.updateByPrimaryKeySelective(temp);
+					//设置success信息，将用户信息存入session中
 					result.setState(Result.SUCCESS);
 					session.setAttribute("loginAdmin", admin);
-					log.info("用户 ["+admin.getUsername()+"]登陆成功，进入系统");
 				}
 			}else if(admin.getStatus()==1) {
 				//status=1表示账号转改为封停
