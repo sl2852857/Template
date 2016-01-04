@@ -1,0 +1,3 @@
+//解决get请求中文参数乱码问题，前端将中文参数两次encodeURI，即encodeURI(encodeURI("中文"))
+//后台通过URLDecoder.decode解码，如下
+searchValue = URLDecoder.decode(searchValue, "UTF-8");

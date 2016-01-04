@@ -1,5 +1,6 @@
 package com.hullsoft.web.admin;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,6 +70,8 @@ public class MenuController {
 		List<Menu> menuList = new ArrayList<Menu>();
 		try {
 			String searchValue = request.getParameter("searchValue");
+			//解决get请求中文参数乱码问题，前端将中文参数两次encodeURI，即encodeURI(encodeURI("中文"))
+			searchValue = URLDecoder.decode(searchValue, "UTF-8");
 			Condition c = new Condition();
 			searchValue = searchValue==null?"":searchValue;
 			c.put(Condition.SEARCH_VALUE, searchValue);

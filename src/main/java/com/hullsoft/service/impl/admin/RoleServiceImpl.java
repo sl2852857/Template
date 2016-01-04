@@ -33,18 +33,19 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements IRoleServi
 	private IRoleDao roleDao;
 
 	@Transactional
-	public void insert(Role role, int[] menuIds) throws Exception{
+	public Integer insertAndBackId(Role role) throws Exception{
 		long startTime = System.currentTimeMillis();
 		log.info("------持久化角色信息 Start------");
+		Integer roleID = 0;
 		try {
 			//检查是否重名
-			Integer roleID = super.insertAndBackID(role); //保存角色基本信息并返回对应ID
-			Condition condition = new Condition();
+			roleID = super.insertAndBackID(role); //保存角色基本信息并返回对应ID
+			/*Condition condition = new Condition();
 			condition.put("roleID", roleID);
 			for(int menuID:menuIds){
 				condition.put("menuID", menuID);
 				roleDao.insertAssociation(condition);//保存关联信息
-			}
+			}*/
 		} catch(DuplicateKeyException e) {
 			log.info("唯一性约束冲突，持久化数据失败");
 			throw e;
@@ -54,6 +55,7 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements IRoleServi
 			log.info("耗时："+(System.currentTimeMillis() - startTime) + "ms");
 			log.info("------持久化角色信息 End------");
 		}
+		return roleID;
 	}
 
 	@Override
@@ -119,5 +121,9 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements IRoleServi
 		log.info("耗时："+(System.currentTimeMillis() - startTime) + "ms");
 		log.info("---查询角色信息 End------");
 		return role;
+	}
+
+	public List<Menu> selectMenuListById(Integer roleID) {
+		return roleDao.selectMenuList(roleID);
 	}
 }

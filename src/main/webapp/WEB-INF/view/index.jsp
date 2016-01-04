@@ -22,6 +22,8 @@
     <link rel="stylesheet" type="text/css" href="${cssPath}/elements.css" />
     <link rel="stylesheet" type="text/css" href="${cssPath}/icons.css" />
 
+	<!-- Pagination 分页 -->
+	<link rel="stylesheet" type="text/css" href="${cssPath }/pagination.css">
     <!-- this page specific styles -->
     <link rel="stylesheet" href="${cssPath}/compiled/index.css" type="text/css" media="screen" />    
 
@@ -116,6 +118,10 @@
     <script src="${jsPath}/jquery-ui-1.10.2.custom.min.js"></script>
     <script src="${jsPath}/theme.js"></script>
     <script src="${jsPath}/jquery.cookie.js"></script>
+    
+    <!-- Pagination 分页 -->
+    <script src="${jsPath }/jquery.pagination.js"></script>
+    
 	<script type="text/javascript">
 		function loadUrl(url) {
 			$.get(

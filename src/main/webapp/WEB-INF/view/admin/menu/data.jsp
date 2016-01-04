@@ -5,9 +5,9 @@
   <table class="table table-hover">
 	<thead>
 	  <tr style="background-color: #f7f7f7">
-		<th class="span3">
+		<!-- <th class="span3">
 	      <input type="checkbox" />选择
-	   	</th>
+	   	</th> -->
 	   	<th class="span3">
 	      <span class="line"></span>ID
 	  	</th>
@@ -32,9 +32,9 @@
 	<!-- row -->
 	  <c:forEach items="${menuList }" var="menu">
 	  	<tr>
-	      <td>
+	      <!-- <td>
 	        <input type="checkbox" />
-	      </td>
+	      </td> -->
 	      <td class="description">
 	      	${menu.id }
 	      </td>
@@ -57,7 +57,7 @@
 	        </td>
 	        <td>
 	          <ul class="actions">
-	          	<li><i class="table-edit"></i></li>
+	          	<li><i class="table-edit" onclick="updateFunc('${menu.id}','', '${menu.name}','${menu.url}','${menu.orderNum}')"></i></li>
 	           	<li><i class="table-settings" onclick="settingsFunc('${menu.id}','0','${menu.status}')"></i></li>
 	          	<li class="last"><i class="table-delete" onclick="deleteFunc('${menu.id}','0')"></i></li>
 	          </ul>
@@ -65,9 +65,9 @@
 	   	  </tr>
 	   	  <c:forEach items="${menu.menuList }" var="sonMenu">
 	   	  	<tr style="background-color: #f7f7f7">
-		        <td>
+		        <!-- <td>
 		          <input type="checkbox" />
-		        </td>
+		        </td> -->
 		        <td class="description">
 		            ${sonMenu.id }
 		        </td>
@@ -90,7 +90,7 @@
 		        </td>
 		        <td>
 		          <ul class="actions">
-		          	<li><i class="table-edit"></i></li>
+		          	<li><i class="table-edit" onclick="updateFunc('${sonMenu.id}','${menu.name }', '${sonMenu.name}','${sonMenu.url}','${sonMenu.orderNum}')"></i></li>
 		           	<li><i class="table-settings" onclick="settingsFunc('${sonMenu.id}','1','${sonMenu.status}')"></i></li>
 		          	<li class="last"><i class="table-delete" onclick="deleteFunc('${sonMenu.id}','1')"></i></li>
 		          </ul>
@@ -100,6 +100,7 @@
 	  </c:forEach>
     </tbody>
   </table>
+  
   
   <script type="text/javascript">
   	function deleteFunc(id, parentID) {
@@ -112,7 +113,7 @@
   				if(msg.state!='success') {
   					alert(msg.msg);
   				}else{
-  					loadData();
+  					loadUrl("admin/menu/list.do");
   				}
   			});
   		}
@@ -133,7 +134,7 @@
   		
   		if(confirm(q)) {
   			$.ajax({
-  				url: '${base}/admin/menu/update.do?id='+id+'&status='+status,
+  				url: '${base}/admin/menu/updateStatus.do?id='+id+'&status='+status,
   				type: 'GET',
   				dataType: 'json',
   				success: function(msg) {

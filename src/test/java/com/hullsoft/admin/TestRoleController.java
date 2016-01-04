@@ -39,9 +39,9 @@ public class TestRoleController {
 		role.setCreateTime(now);
 		role.setLastUpdateTime(now);
 		role.setStatus(1);
-		int[] menuIds = {1,2};
+		//int[] menuIds = {1,2};
 		try {
-			roleService.insert(role, menuIds);
+			//roleService.insert(role, menuIds);
 		} catch(DuplicateKeyException e) {
 			log.info("数据插入异常，约束性条件引起");
 		} catch (Exception e) {

@@ -1,5 +1,8 @@
 package com.hullsoft.service.admin;
 
+import java.util.List;
+
+import com.hullsoft.entity.admin.Menu;
 import com.hullsoft.entity.admin.Role;
 import com.hullsoft.service.IBaseService;
 
@@ -16,7 +19,7 @@ public interface IRoleService extends IBaseService<Role> {
 	 * @param menuIds
 	 * @throws Exception 
 	 */
-	void insert(Role role, int[] menuIds) throws Exception;
+	Integer insertAndBackId(Role role) throws Exception;
 
 	/**
 	 * 修改角色与菜单关联关系
@@ -32,4 +35,11 @@ public interface IRoleService extends IBaseService<Role> {
 	 * @return
 	 */
 	Role selectByIdAndMenuIsEnable(Integer id);
+
+	/**
+	 * 根据角色id查询其对应菜单集合
+	 * @param roleID
+	 * @return
+	 */
+	List<Menu> selectMenuListById(Integer roleID);
 }

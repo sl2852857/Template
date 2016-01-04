@@ -1,19 +1,26 @@
 package com.hullsoft.web.admin;
 
+import java.net.URLDecoder;
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.redis.connection.util.DecodeUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.hullsoft.entity.admin.Menu;
 import com.hullsoft.entity.admin.Role;
 import com.hullsoft.entity.common.Condition;
 import com.hullsoft.entity.common.Page;
 import com.hullsoft.entity.common.Result;
+import com.hullsoft.service.admin.IMenuService;
 import com.hullsoft.service.admin.IRoleService;
 import com.hullsoft.utils.DateUtils;
 
@@ -29,7 +36,31 @@ public class RoleController {
 	
 	@Resource
 	private IRoleService roleService;
+	
+	@Resource
+	private IMenuService menuService;
 
+	//权限编辑
+	@RequestMapping("/editRoot.do")
+	public String toAdd(Model model, HttpServletRequest request) {
+		//若method为add则不去查询menuList
+		String method = request.getParameter("method");
+		Integer roleID = Integer.parseInt(request.getParameter("roleID"));
+		if(method.equals("edit")) {
+			//编辑权限，将原有权限对应的菜单集合获取
+			Condition condition = new Condition();
+			condition.put("roleID", roleID);
+			List<Menu> menuList = roleService.selectMenuListById(roleID);
+			model.addAttribute("menuList", menuList);
+		}
+		//获取所有菜单
+		List<Menu> allMenuList = menuService.selectList(new Condition());
+		model.addAttribute("roleID", roleID);
+		model.addAttribute("allMenuList", allMenuList);
+		model.addAttribute("method", method);
+		return "admin/role/addOrEdit";
+	}
+	
 	/**
 	 * 添加角色信息
 	 * @param name
@@ -37,7 +68,7 @@ public class RoleController {
 	 * @return
 	 */
 	@RequestMapping(value = "/add.do", produces = "application/json;charset=UTF-8")
-	public @ResponseBody String add(String name, int[] menuIds) {
+	public @ResponseBody String add(String name, int status) {
 		log.info("添加角色信息");
 		Result result = new Result();
 		try {
@@ -46,8 +77,10 @@ public class RoleController {
 			String now = DateUtils.now("yyyy-MM-dd HH:mm:ss");
 			role.setCreateTime(now);
 			role.setLastUpdateTime(now);
-			role.setStatus(0);//默认启用
-			roleService.insert(role, menuIds);
+			role.setStatus(status);//默认启用
+			Integer roleID = roleService.insertAndBackId(role);
+			result.put("roleID", roleID);
+			result.setState(Result.SUCCESS);
 		} catch (DuplicateKeyException e) { //重复键异常：name字段设置了unique约束
 			log.info("唯一性约束冲突，持久化数据失败");
 			result.setState(Result.FAILURE);
@@ -104,18 +137,39 @@ public class RoleController {
 	 * @return
 	 */
 	@RequestMapping(value = "list.do", produces = "application/json;charset=UTF-8")
-	public @ResponseBody String list(Page<Role> page, HttpServletRequest request) {
+	public String list(Model model, Page<Role> page, HttpServletRequest request) {
 		log.info("查询角色信息列表");
-		Result result = new Result();
 		try {
 			String searchValue = request.getParameter(Condition.SEARCH_VALUE);
 			page.setSearchValue(searchValue);
 			page = roleService.selectList(page);
+			model.addAttribute("page", page);
 		} catch (Exception e) {
 			log.error("系统异常", e);
-			result.setError(e);
 		}
-		return result.toJSONString();
+		return "admin/role/list";
+	}
+	
+	/**
+	 * 加载数据
+	 * @param model
+	 * @param page
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "data.do")
+	public String data(Model model, Page<Role> page, HttpServletRequest request) {
+		log.info("加载角色数据");
+		try {
+			String searchValue = request.getParameter("searchValue");
+			searchValue = URLDecoder.decode(searchValue, "UTF-8");
+			page.setSearchValue(searchValue);
+			page = roleService.selectList(page);
+			model.addAttribute("page", page);
+		} catch (Exception e) {
+			log.error("系统异常", e);
+		}
+		return "admin/role/data";
 	}
 	
 	/**
