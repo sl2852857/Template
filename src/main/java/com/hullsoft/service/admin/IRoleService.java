@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.hullsoft.entity.admin.Menu;
 import com.hullsoft.entity.admin.Role;
+import com.hullsoft.entity.common.Result;
 import com.hullsoft.service.IBaseService;
 
 /**
@@ -42,4 +43,11 @@ public interface IRoleService extends IBaseService<Role> {
 	 * @return
 	 */
 	List<Menu> selectMenuListById(Integer roleID);
+	
+	/**
+	 * 删除角色，并删除其角色权限关系，前提得验证是否有用户使用该角色
+	 * @param id
+	 * @param result
+	 */
+	void deleteById(Integer id, Result result) throws Exception;
 }

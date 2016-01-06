@@ -13,7 +13,7 @@
 	</div>
 	<div class="row-fluid filter-block">
 	  <div class="left">
-		<input type="text" class="search" id="searchValue" onkeypress="EnterPress(event)" onkeydown="EnterPress()"/>
+		<input type="text" class="search" id="searchValue" onkeypress="EnterPress(event)"/>
 		<a class="btn-flat new-product" data-toggle="modal" data-target="#addMenu">+ 添加菜单</a>
 	  </div>
 	</div>
@@ -180,10 +180,10 @@
 			success: function(msg) {
 				if(msg.state=='success') {
 					alert("添加成功");
-					loadData();
 					$("#addMenu").modal("toggle");
 					//重置模态框表单
 					$("#add_form")[0].reset();
+					loadUrl("admin/menu/list.do");
 				}else{
 					alert(msg.msg);
 				}

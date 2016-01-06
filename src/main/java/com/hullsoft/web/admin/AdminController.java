@@ -3,6 +3,7 @@
  */
 package com.hullsoft.web.admin;
 
+import java.net.URLDecoder;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -24,6 +25,7 @@ import com.hullsoft.entity.common.Result;
 import com.hullsoft.service.admin.IAdminService;
 import com.hullsoft.service.admin.IMenuService;
 import com.hullsoft.service.admin.IRoleService;
+import com.hullsoft.utils.DateUtils;
 
 /**
  * @author Administrator
@@ -90,11 +92,35 @@ public class AdminController {
 	}
 	
 	/**
+	 * 添加或编辑
+	 * @param model
+	 * @param method   添加=add，编辑=edit
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/toAddOrEdit")
+	public String toAddOrEdit(Model model, String method, HttpServletRequest request) {
+		if("edit".equals(method)) {
+			//编辑操作，查询id对应信息
+			Integer id = Integer.parseInt(request.getParameter("id"));
+			Admin admin = adminService.selectById(id);
+			model.addAttribute("admin", admin);
+		}
+		//查询角色列表
+		Page<Role> page = new Page<Role>();
+		page.setLimit(false);//无限制
+		page = roleService.selectList(page);
+		model.addAttribute("page", page);
+		model.addAttribute("method", method);
+		return "admin/admin/addOrEdit";
+	}
+	
+	/**
 	 * 添加用户
 	 * @param admin
 	 * @return
 	 */
-	@RequestMapping(value = "/add.do", produces= "application/json", method = RequestMethod.POST)
+	@RequestMapping(value = "/add.do", produces= "application/json;charset=UTF-8", method = RequestMethod.POST)
 	public @ResponseBody String save(Admin admin) {
 		log.info("添加用户");
 		Result result = new Result();
@@ -155,12 +181,13 @@ public class AdminController {
 	 * @param admin
 	 * @return
 	 */
-	@RequestMapping("/update.do")
+	@RequestMapping(value = "/update.do", produces="application/json;charset=UTF-8")
 	public @ResponseBody String update(Admin admin) {
 		log.info("修改用户信息");
 		Result result = new Result();
 		try {
 			adminService.updateById(admin);
+			result.setState(Result.SUCCESS);
 		} catch (Exception e) {
 			log.error("系统异常", e);
 			result.setError(e);
@@ -201,18 +228,39 @@ public class AdminController {
 		log.info("查询用户列表");
 		Result result = new Result();
 		try {
-			if(page==null){
-				page = new Page<Admin>();
-			}
 			String searchValue = request.getParameter("searchValue");
-			page.setSearchValue(searchValue);
+			searchValue = searchValue==null?"":searchValue;
+			page.setSearchValue(URLDecoder.decode(searchValue, "utf-8"));
+			page.setLimit(false);//不限制查询总数
 			page = adminService.selectList(page);
 			model.addAttribute("page", page);
+			model.addAttribute("searchValue", searchValue);
 		} catch (Exception e) {
 			log.error("系统异常", e);
 			result.setError(e);
 		}
 		return "admin/admin/list";
+	}
+	
+	/**
+	 * 加载用户信息数据
+	 * @param model
+	 * @param page
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/data.do")
+	public String data(Model model, Page<Admin> page, HttpServletRequest request) {
+		log.info("加载用户信息数据");
+		try {
+			String searchValue = request.getParameter("searchValue");
+			page.setSearchValue(URLDecoder.decode(searchValue, "utf-8"));
+			page = adminService.selectList(page);
+			model.addAttribute("page", page);
+		} catch (Exception e) {
+			log.error("系统异常", e);
+		}
+		return "admin/admin/data";
 	}
 	
 	/**

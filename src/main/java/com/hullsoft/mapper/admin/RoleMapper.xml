@@ -49,7 +49,9 @@
   	<if test="condition.searchValue!=null">
   		and name like '%${condition.searchValue}%'
   	</if>
-	limit #{startIndex},#{pageSize}
+  	<if test="isLimit == true">
+		limit #{startIndex},#{pageSize}
+  	</if>
   </select>
   <select id="selectMenuList" parameterType="java.lang.Integer" resultMap="MenuResultMap">
   	select 
@@ -143,7 +145,6 @@
   <update id="updateByPrimaryKey" parameterType="com.hullsoft.entity.admin.Role" >
     update t_role
     set name = #{name,jdbcType=VARCHAR},
-      createTime = #{createTime,jdbcType=VARCHAR},
       lastUpdateTime = #{lastUpdateTime,jdbcType=VARCHAR},
       status = #{status,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}

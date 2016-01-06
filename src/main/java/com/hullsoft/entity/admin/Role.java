@@ -80,13 +80,13 @@ public class Role {
 		Menu roleManage = new Menu(2, "系统角色", "", 0);
 		List<Menu> roleManageSonList = new ArrayList<Menu>();
 		roleManageSonList.add(new Menu(6, "系统角色管理", "admin/role/list.do", 2));
-		roleManageSonList.add(new Menu(7, "系统角色添加", "admin/role/toAdd.do", 2));
+		//roleManageSonList.add(new Menu(7, "系统角色添加", "admin/role/toAdd.do", 2));
 		roleManage.setMenuList(roleManageSonList);
 		
 		Menu adminManage = new Menu(3, "系统用户", "", 0);
 		List<Menu> adminManageSonList = new ArrayList<Menu>();
 		adminManageSonList.add(new Menu(8, "系统用户管理", "admin/list.do", 2));
-		adminManageSonList.add(new Menu(9, "系统用户添加", "admin/toAdd.do", 2));
+		adminManageSonList.add(new Menu(9, "系统用户添加", "admin/toAddOrEdit.do?method=add", 2));
 		adminManage.setMenuList(adminManageSonList);
 		
 		list.add(menuManage);

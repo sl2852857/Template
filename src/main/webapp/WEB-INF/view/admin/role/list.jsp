@@ -13,7 +13,7 @@
 	</div>
 	<div class="row-fluid filter-block">
 	  <div class="left">
-		<input type="text" class="search" id="searchValue" onkeypress="EnterPress(event)" onkeydown="EnterPress()"/>
+		<input type="text" class="search" id="searchValue" onkeypress="EnterPress(event)" value="${searchValue }"/>
 		<a class="btn-flat new-product" data-toggle="modal" data-target="#addRole">+ 添加角色</a>
 	  </div>
 	</div>
@@ -61,9 +61,11 @@
 	</div><!-- /.modal -->
   </div>
   <script type="text/javascript">
+  	//记录翻页页码
+  	var pageIndex = '0';
   	$(function(){
   		$(".pagination").pagination('${page.dataCount}', {
-            callback: pageSelectCallback,//PageCallback() 为翻页调用次函数。
+            callback: pageSelectCallback,//pageSelectCallback() 为翻页调用次函数。
             prev_text: "上一页",
             next_text: "下一页 ",
             items_per_page: '${page.pageSize}', //每页的数据个数
@@ -78,15 +80,21 @@
 	}	
   	
   	//搜索文本框触发事件
-  	function EnterPress(e){ //传入 event
+  	function EnterPress(e) { //传入 event
+  		var searchValue = $.trim($("#searchValue").val());
 		var e = e || window.event;
 		if(e.keyCode == 13){
-			loadData('0');
+			loadUrl('admin/role/list.do?searchValue='+encodeURI(encodeURI(searchValue)));
 		}
 	} 
   	
   	//加载数据  page_id页码，第一页为0
-  	function loadData(page_id){
+  	function loadData(page_id) {
+  		if(page_id != ''){
+	  		pageIndex = page_id;
+  		}else {
+  			page_id = pageIndex;
+  		}
   		var searchValue = $("#searchValue").val();
   		$.get("${base}/admin/role/data.do?searchValue="+encodeURI(encodeURI(searchValue))+"&pageIndex="+(page_id+1), function(html) {
   			$("#dataContent").html(html);

@@ -11,10 +11,13 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.hullsoft.dao.admin.IAdminDao;
 import com.hullsoft.dao.admin.IRoleDao;
+import com.hullsoft.entity.admin.Admin;
 import com.hullsoft.entity.admin.Menu;
 import com.hullsoft.entity.admin.Role;
 import com.hullsoft.entity.common.Condition;
+import com.hullsoft.entity.common.Result;
 import com.hullsoft.service.admin.IRoleService;
 import com.hullsoft.service.impl.BaseServiceImpl;
 import com.hullsoft.utils.DateUtils;
@@ -31,6 +34,9 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements IRoleServi
 	
 	@Resource
 	private IRoleDao roleDao;
+	
+	@Resource
+	private IAdminDao adminDao;
 
 	@Transactional
 	public Integer insertAndBackId(Role role) throws Exception{
@@ -80,14 +86,16 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements IRoleServi
 			//修改角色信息
 			role.setLastUpdateTime(DateUtils.now("yyyy-MM-dd HH:mm:ss"));
 			roleDao.updateByPrimaryKeySelective(role);
-			//修改关联关系，先删除原有关联关系
-			Condition condition = new Condition();
-			condition.put("roleID", role.getId());
-			roleDao.deleteAssociation(condition);
-			//添加新的关联关系
-			for(int menuID:menuIds){
-				condition.put("menuID", menuID);
-				roleDao.insertAssociation(condition);
+			//若menuIds有值，则修改关联关系，先删除原有关联关系
+			if(menuIds!=null&&menuIds.length>0) {
+				Condition condition = new Condition();
+				condition.put("roleID", role.getId());
+				roleDao.deleteAssociation(condition);
+				//添加新的关联关系
+				for(int menuID:menuIds){
+					condition.put("menuID", menuID);
+					roleDao.insertAssociation(condition);
+				}
 			}
 		} catch (DuplicateKeyException e) {
 			log.info("唯一性约束冲突，修改失败");
@@ -124,6 +132,34 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements IRoleServi
 	}
 
 	public List<Menu> selectMenuListById(Integer roleID) {
-		return roleDao.selectMenuList(roleID);
+		long startTime = System.currentTimeMillis();
+		log.info("---查询角色拥有的菜单集合(根据角色Id) Start------");
+		List<Menu> menuList = roleDao.selectMenuList(roleID);
+		log.info("耗时："+(System.currentTimeMillis() - startTime) + "ms");
+		log.info("---查询角色信息 End------");
+		return menuList;
+	}
+
+	@Transactional
+	public void deleteById(Integer id, Result result) throws Exception{
+		long startTime = System.currentTimeMillis();
+		log.info("---删除角色信息 Start------");
+		//验证是否有用户拥有该角色
+		Condition condition = new Condition();
+		condition.put("roleID", id);
+		Admin temp = adminDao.selectByCondition(condition);
+		if(temp!=null) {
+			//有用户拥有该角色
+			result.setMsg("该角色已被用户["+temp.getUsername()+"]占用，请先解除占用");
+			result.setState(Result.FAILURE);
+		}else {
+			//未占用，删除角色菜单关系
+			roleDao.deleteAssociation(condition);
+			//删除该角色信息
+			roleDao.deleteByPrimaryKey(id);
+			result.setState(Result.SUCCESS);
+		}
+		log.info("耗时："+(System.currentTimeMillis() - startTime) + "ms");
+		log.info("---查询角色信息 End------");
 	}
 }

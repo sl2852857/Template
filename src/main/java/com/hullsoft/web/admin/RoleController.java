@@ -1,6 +1,7 @@
 package com.hullsoft.web.admin;
 
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -9,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.data.redis.connection.util.DecodeUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,24 +40,35 @@ public class RoleController {
 	@Resource
 	private IMenuService menuService;
 
-	//权限编辑
+	/**
+	 * 权限编辑
+	 * @param model
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping("/editRoot.do")
 	public String toAdd(Model model, HttpServletRequest request) {
 		//若method为add则不去查询menuList
 		String method = request.getParameter("method");
 		Integer roleID = Integer.parseInt(request.getParameter("roleID"));
 		if(method.equals("edit")) {
-			//编辑权限，将原有权限对应的菜单集合获取
+			//编辑权限，将原有权限对应的菜单id集合获取
 			Condition condition = new Condition();
 			condition.put("roleID", roleID);
 			List<Menu> menuList = roleService.selectMenuListById(roleID);
-			model.addAttribute("menuList", menuList);
+			List<Integer> menuIdList = new ArrayList<Integer>();
+			for(Menu m:menuList) {
+				menuIdList.add(m.getId());
+				for(Menu m2:m.getMenuList()) {
+					menuIdList.add(m2.getId());
+				}
+			}
+			model.addAttribute("menuIdList", menuIdList);
 		}
 		//获取所有菜单
 		List<Menu> allMenuList = menuService.selectList(new Condition());
 		model.addAttribute("roleID", roleID);
 		model.addAttribute("allMenuList", allMenuList);
-		model.addAttribute("method", method);
 		return "admin/role/addOrEdit";
 	}
 	
@@ -102,7 +113,7 @@ public class RoleController {
 		log.info("删除角色");
 		Result result = new Result();
 		try {
-			roleService.deleteById(id);
+			roleService.deleteById(id, result);
 		} catch (Exception e) {
 			log.error("系统异常", e);
 			result.setError(e);
@@ -118,9 +129,14 @@ public class RoleController {
 	 */
 	@RequestMapping(value = "/update.do", produces = "application/json;charset=UTF-8")
 	public @ResponseBody String update (Role role, int[] menuIds) {
+		log.info("------ 根据角色信息与权限 Start ------");
 		Result result = new Result();
 		try {
+			if(role.getName()!=null) {
+				role.setName(URLDecoder.decode(role.getName(), "utf-8"));
+			}
 			roleService.updateById(role, menuIds);
+			result.setState(Result.SUCCESS);
 		} catch (DuplicateKeyException e) { //重复键异常：name字段设置了unique约束
 			log.info("唯一性约束冲突，持久化数据失败");
 			result.setState(Result.FAILURE);
@@ -129,6 +145,7 @@ public class RoleController {
 			log.error("系统异常", e);
 			result.setError(e);
 		}
+		log.info("------ 根据角色信息与权限 End ------");
 		return result.toJSONString();
 	}
 	
@@ -141,8 +158,11 @@ public class RoleController {
 		log.info("查询角色信息列表");
 		try {
 			String searchValue = request.getParameter(Condition.SEARCH_VALUE);
+			searchValue = searchValue==null?"":URLDecoder.decode(searchValue, "utf-8");
 			page.setSearchValue(searchValue);
+			page.setLimit(false);
 			page = roleService.selectList(page);
+			model.addAttribute("searchValue", searchValue);
 			model.addAttribute("page", page);
 		} catch (Exception e) {
 			log.error("系统异常", e);

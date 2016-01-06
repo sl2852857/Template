@@ -122,6 +122,8 @@ public class AdminServiceImpl extends BaseServiceImpl<Admin> implements IAdminSe
 		try {
 			//密码MD5加密
 			t.setPassword(MD5Utils.MD5(t.getPassword()));
+			t.setCreateTime(DateUtils.now("yyyy-MM-dd HH:mm:ss"));
+			t.setIsSA(0);
 			log.info("添加对象："+JSON.toJSONString(t));
 			adminDao.insert(t);
 		} catch (Exception e) {
